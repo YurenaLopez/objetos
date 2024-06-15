@@ -1,0 +1,20 @@
+[
+  {
+    "nombre": "lapiz",
+    "categoria": "papeleria",
+    "precio": "2.40",
+    "EAN13": "8674578251922"
+  },
+  {
+    "nombre": "goma",
+    "categoria": "papeleria",
+    "precio": "1.40",
+    "EAN13": "4420809671809"
+  },
+  {
+    "nombre": "silla",
+    "categoria": "oficina",
+    "precio": "65.95",
+    "EAN13": "3647144792902"
+  }
+]
