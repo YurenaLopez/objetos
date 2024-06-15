@@ -1,4 +1,4 @@
-package ufv._4.examenprueba.yls;
+package org.vaadin.example;
 
 public class Productos {
 
@@ -56,6 +56,7 @@ public class Productos {
                 "nombre='" + nombre + '\'' +
                 ", categoria='" + categoria + '\'' +
                 ", precio='" + precio + '\'' +
-                ", EAN13='" + EAN13 + '\'';
+                ", EAN13='" + EAN13 + '\'' +
+                '}';
     }
 }

@@ -1,5 +1,8 @@
 package org.vaadin.example;
 
+import com.nimbusds.jose.shaded.gson.Gson;
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.data.renderer.NativeButtonRenderer;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.Key;
@@ -10,55 +13,65 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
+import org.springframework.security.core.parameters.P;
 
-/**
- * A sample Vaadin view class.
- * <p>
- * To implement a Vaadin view just extend any Vaadin component and use @Route
- * annotation to announce it in a URL as a Spring managed bean.
- * <p>
- * A new instance of this class is created for every new user and every browser
- * tab/window.
- * <p>
- * The main view contains a text field for getting the user name and a button
- * that shows a greeting message in a notification.
- */
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.Arrays;
+import java.util.List;
+
+
 @Route
 public class MainView extends VerticalLayout {
 
-    /**
-     * Construct a new Vaadin view.
-     * <p>
-     * Build the initial UI state for the user accessing the application.
-     *
-     * @param service
-     *            The message service. Automatically injected Spring managed
-     *            bean.
-     */
-    public MainView(@Autowired GreetService service) {
+    private Grid<Productos> grid = new Grid<>();
 
-        // Use TextField for standard text input
-        TextField textField = new TextField("Your name");
-        textField.addClassName("bordered");
+    public MainView(@Autowired ProductosService service) {
+        grid.addColumn(Productos::getNombre).setHeader("Nombre").setAutoWidth(true);
+        grid.addColumn(Productos::getCategoria).setHeader("Categoria").setAutoWidth(true);
+        grid.addColumn(Productos::getPrecio).setHeader("Precio").setAutoWidth(true);
+        grid.addColumn(Productos::getEAN13).setHeader("Ean13").setAutoWidth(true);
 
-        // Button click listeners can be defined as lambda expressions
-        Button button = new Button("Say hello", e -> {
-            add(new Paragraph(service.greet(textField.getValue())));
-        });
-
-        // Theme variants give you predefined extra styles for components.
-        // Example: Primary button has a more prominent look.
-        button.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-
-        // You can specify keyboard shortcuts for buttons.
-        // Example: Pressing enter in this view clicks the Button.
-        button.addClickShortcut(Key.ENTER);
-
-        // Use custom CSS classes to apply styling. This is defined in
-        // styles.css.
-        addClassName("centered-content");
-
-        add(textField, button);
+        // Añadir el Grid al layout principal
+        add(grid);
+        loadProductos();
+    }
+    private void loadProductos() {
+        // Obtener datos del servicio o controlador
+        List<Productos> productos = getProductosFromController();
+        grid.setItems(productos);
     }
 
+    private List<Productos> getProductosFromController() {
+        String url = "http://localhost:8080/productos";
+
+        try {
+            // Configurar cliente HTTP
+            HttpClient httpClient = HttpClient.newHttpClient();
+            HttpRequest httpRequest = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .build();
+
+            // Hacer la llamada GET
+            HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() == 200) {
+                // Convertir la respuesta JSON a una lista de Characters
+                Productos[] productossArray = new Gson().fromJson(response.body(), Productos[].class);
+                return Arrays.asList(productossArray);
+            } else {
+                // En caso de error mostrar mensaje
+                System.out.println("Error al obtener datos: " + response.statusCode());
+            }
+        } catch (Exception e) {
+            // Manejar excepción
+            e.printStackTrace();
+        }
+
+        // En caso de error
+        return List.of();
+    }
 }
+
