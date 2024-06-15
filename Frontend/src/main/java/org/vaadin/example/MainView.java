@@ -26,26 +26,18 @@ import java.util.List;
 @Route
 public class MainView extends VerticalLayout {
 
-    private Grid<Productos> grid = new Grid<>(Productos.class);
+    private Grid<Productos> grid = new Grid<>();
 
     public MainView(@Autowired ProductosService service) {
-        grid.setColumns("nombre", "categoria", "precio", "EAN13");
-        // Configurar columnas del Grid
         grid.addColumn(Productos::getNombre).setHeader("Nombre").setAutoWidth(true);
         grid.addColumn(Productos::getCategoria).setHeader("Categoria").setAutoWidth(true);
         grid.addColumn(Productos::getPrecio).setHeader("Precio").setAutoWidth(true);
         grid.addColumn(Productos::getEAN13).setHeader("Ean13").setAutoWidth(true);
-        // Configurar botón Generar PDF
-        //PDFManager pdfManager = new PDFManager();
-        //grid.addColumn(new NativeButtonRenderer<>("Añadir", productos -> {
-          //  pdfManager.GenerarPDF(productos.getName(), productos);
-        //}));
 
         // Añadir el Grid al layout principal
         add(grid);
         loadProductos();
     }
-
     private void loadProductos() {
         // Obtener datos del servicio o controlador
         List<Productos> productos = getProductosFromController();
