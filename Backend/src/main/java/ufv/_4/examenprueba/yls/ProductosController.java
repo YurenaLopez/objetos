@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 @RestController
@@ -32,7 +33,7 @@ public class ProductosController {
         String json = gson.toJson(datos);
 
         // Escribimos el JSON actualizado en el archivo
-        File file = new File("characters.JSON");
+        File file = new File("productos.JSON");
         FileWriter fileWriter = new FileWriter(file);
         fileWriter.write(json); // Escribir el JSON actualizado
         fileWriter.flush();
